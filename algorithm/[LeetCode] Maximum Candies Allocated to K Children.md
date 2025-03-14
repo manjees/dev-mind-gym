@@ -1,32 +1,47 @@
-# 📝 House Robber
+# 📝 Maximum Candies Allocated to K Children
 
-🔗 **문제 링크**: [House Robber](https://leetcode.com/explore/learn/card/dynamic-programming/631/strategy-for-solving-dp-problems/4148/)
+🔗 **문제 링크**: [Maximum Candies Allocated to K Children](https://leetcode.com/problems/maximum-candies-allocated-to-k-children/description/?envType=daily-question&envId=2025-03-14)
 
 ## 📌 문제 설명  
 
-You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
+You are given a 0-indexed integer array candies. Each element in the array denotes a pile of candies of size candies[i]. You can divide each pile into any number of sub piles, but you cannot merge two piles together.
 
-Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
+You are also given an integer k. You should allocate piles of candies to k children such that each child gets the same number of candies. Each child can be allocated candies from only one pile of candies and some piles of candies may go unused.
+
+Return the maximum number of candies each child can get.
 
 ---
 
 ## 💡 풀이 코드 (Kotlin)
 ```kotlin
-fun rob(nums: IntArray): Int {
-    if (nums.size == 1) return nums.first()
-    if (nums.size == 2) return nums.max()
+private fun maximumCandies(candies: IntArray, k: Long): Int {
+        val totalCandies = candies.fold(0L) { acc, num -> acc + num }
+        if (totalCandies < k) return 0
 
-    val dp = IntArray(nums.size)
-    dp[0] = nums.first()
-    dp[1] = max(nums.first(), nums[1])
+        var left = 1
+        var right = candies.maxOrNull() ?: 0
+        var result = 0
 
-    for (index in 2 until nums.size) {
-        dp[index] = max(dp[index - 1], nums[index] + dp[index - 2])
+        while (left <= right) {
+            val mid = left + (right - left) / 2
+
+            var count = 0L
+            for (candy in candies) {
+                count += candy / mid
+                if (count >= k) break
+            }
+
+            if (count >= k) {
+                result = mid
+                left = mid + 1
+            } else {
+                right = mid - 1
+            }
+        }
+
+        return result
     }
-
-    return dp.max()
-}
-}
 ```
 
 ## 개선 사항
+- 이진 탐색 로직 간소화
